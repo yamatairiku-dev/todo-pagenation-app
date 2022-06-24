@@ -1,0 +1,50 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page">ToDo一覧</li>
+  </ol>
+</nav>
+
+<div class="text-center">
+    <h2>ToDo一覧</h2>
+</div>
+
+<nav aria-label="Search results pages">
+  <ul class="pagination justify-content-center">
+    <% if (pagenation.pagePre) { %>
+      <li class="page-item"><a class="page-link" href="?page=<%= pagenation.pagePre %>">Previous</a></li>
+    <% } %>
+    <% pagenation.pageNumArr.forEach(pageNum => { %>
+      <% const activeClass = pageNum == pagenation.currentPage ? 'active' : '' %>
+      <li class="page-item <%= activeClass %>"><a class="page-link" href="?page=<%= pageNum %>"><%= pageNum %></a></li>
+    <% }) %>
+    <% if (pagenation.pageNext) { %>
+      <li class="page-item"><a class="page-link" href="?page=<%= pagenation.pageNext %>">Next</a></li>
+    <% } %>
+  </ul>
+</nav>
+
+<table class="table table-hover" id="todos-table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Deadline</th>
+      <th scope="col">Completed</th>
+      <th scope="col">ID</th>
+      <th scope="col">全<%= itemNum %>件</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% todos.forEach(todo => { %>
+      <tr>
+        <th> <%= todos.indexOf(todo) + 1 + (pagenation.currentPage - 1) * itemPerPage  %> </td>
+        <td> <%= todo.title %> </td>
+        <td> <%= todo.deadline %> </td>
+        <td> <%= todo.completed ? "完了" : "未完了" %> </td>
+        <td> <%= todo.id %> </th>
+        <td> <button class="btn btn-outline-danger btn-sm" onclick="location.href='/todos/<%= todo.id %>?_method=DELETE'">削除</button> </th>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
