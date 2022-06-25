@@ -5,12 +5,22 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+
+    //ToDoの登録
+    static async add(value){
+      const todo = await this.create({
+        title: value.title,
+        deadline: value.deadline
+      })
+      return(todo)
+    }
+
     //ToDoのページ取得
     static async getPage(ITEM_PER_PAGE, page) {
       const todoList = await this.findAndCountAll({
-        attributes: ['id', 'title', 'deadline', 'completed'],
+        attributes: ['id', 'title', 'deadline', 'completed', 'updatedAt'],
         order: [
-          ['id', 'DESC']
+          ['updatedAt', 'DESC']
         ],
         limit: ITEM_PER_PAGE,
         offset: ITEM_PER_PAGE * (page - 1)

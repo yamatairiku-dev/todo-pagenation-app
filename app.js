@@ -39,6 +39,22 @@ app.get('/todos', (req, res, next) => {
   }, next)
 })
 
+//ToDoの新規登録
+app.get('/todos/new', (req, res, next) => res.render('new'))
+app.post('/todos/create', (req, res, next) => {
+  const title = req.body.title
+  const deadline = req.body.deadline
+  if (typeof title !== 'string' || !title) {
+    // titleがリクエストに含まれない場合はステータスコード400(Bad Request)
+    const err = new Error('title is required')
+    err.statusCode = 400
+    return next(err)
+  }
+  const value = { title, deadline }
+  models.Todo.add(value).then((todo) => {
+    res.redirect('/todos')}, next)
+})
+
 //ToDoの完了・未完了更新
 app.put('/todos/:id/completed', (req, res, next) => {
   const id = req.params.id
