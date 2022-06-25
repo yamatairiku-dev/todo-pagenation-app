@@ -1,13 +1,10 @@
 'use strict'
 
 const models = require('./models')
-// const dataStorage = require(`./${process.env.npm_lifecycle_event}`)
-// const { v4: uuidv4 } = require('uuid')
 const getPagination = require('./getPagenation')
 const express = require('express')
-const expressEjsLayouts = require("express-ejs-layouts")
+const expressEjsLayouts = require('express-ejs-layouts')
 const methodOverride = require('method-override')
-// const connectFlash = require('connect-flash')
 const app = express()
 const port = 3000
 
@@ -26,28 +23,29 @@ app.get('/name/:name', (req, res) => {
 })
 
 //ToDo一覧の取得
-app.get('/todos', async (req, res, next) => {
-  const ITEM_PER_PAGE = 10;
-  const PAGETATION_COLS = 5;
-  const currentPage = !req.query.page ? 1: Number(req.query.page);
+app.get('/todos', (req, res, next) => {
+  const ITEM_PER_PAGE = 10;   //1ページあたりの行数を設定
+  const PAGETATION_COLS = 5;  //ページネーションの列数を設定
+  const currentPage = !req.query.page ? 1: Number(req.query.page);  //クエリは文字列として扱われる
   const offset_coefficient = currentPage -1;
-  const todoList = await models.Todo.findAndCountAll({
+  models.Todo.findAndCountAll({
     attributes: ['id', 'title', 'deadline', 'completed'],
     order: [
       ['id', 'DESC']
     ],
     limit: ITEM_PER_PAGE,
     offset: ITEM_PER_PAGE * offset_coefficient
-  });
-  //アイテム数
-  const itemNum = todoList['count'];
-  //総ページ数
-  const pageCount = Math.ceil(itemNum / ITEM_PER_PAGE);
+  }).then(todoList => {
+    //アイテム数
+    const itemNum = todoList['count'];
+    //総ページ数
+    const pageCount = Math.ceil(itemNum / ITEM_PER_PAGE);
+    //ページネーションを取得
+    const pagenation = getPagination(PAGETATION_COLS, pageCount, currentPage)
+    console.log(pagenation) //ページネーションの確認
 
-  const pagenation = getPagination(PAGETATION_COLS, pageCount, currentPage)
-  console.log(pagenation)
-
-  res.render('todos',{todos: todoList.rows, pagenation : pagenation, itemNum: itemNum, itemPerPage: ITEM_PER_PAGE})
+    res.render('todos',{todos: todoList.rows, pagenation : pagenation, itemNum: itemNum, itemPerPage: ITEM_PER_PAGE})
+  }, next)
 })
 
 //ToDoの削除
