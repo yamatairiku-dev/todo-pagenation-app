@@ -5,6 +5,29 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
+    //ToDoのページ取得
+    static async getPage(ITEM_PER_PAGE, page) {
+      const todoList = await this.findAndCountAll({
+        attributes: ['id', 'title', 'deadline', 'completed'],
+        order: [
+          ['id', 'DESC']
+        ],
+        limit: ITEM_PER_PAGE,
+        offset: ITEM_PER_PAGE * (page - 1)
+      })
+      return todoList
+    }
+
+    //ToDoの更新
+    static async mod(id, value){
+      const changes = await this.update(
+        value,
+        {
+          where: { id: id },
+        }
+      )
+      return changes[0] === 1 ?  id : null
+    }
 
     //ToDoの削除
     static async remove(id){
@@ -13,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
           where: { id:id },
         }
       )
-      return changes[0] === 1 ?  id : null
+      return changes === 1 ?  id : null
     }
   }
 

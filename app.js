@@ -16,7 +16,6 @@ app.use(express.json())
 app.use(methodOverride('_method', {
   methods: ['POST', 'GET']
 }))
-// app.use(connectFlash())
 
 app.get('/name/:name', (req, res) => {
   res.render('index', { name: req.params.name })
@@ -26,32 +25,45 @@ app.get('/name/:name', (req, res) => {
 app.get('/todos', (req, res, next) => {
   const ITEM_PER_PAGE = 10;   //1ページあたりの行数を設定
   const PAGETATION_COLS = 5;  //ページネーションの列数を設定
-  const currentPage = !req.query.page ? 1: Number(req.query.page);  //クエリは文字列として扱われる
-  const offset_coefficient = currentPage -1;
-  models.Todo.findAndCountAll({
-    attributes: ['id', 'title', 'deadline', 'completed'],
-    order: [
-      ['id', 'DESC']
-    ],
-    limit: ITEM_PER_PAGE,
-    offset: ITEM_PER_PAGE * offset_coefficient
-  }).then(todoList => {
+  const page = !req.query.page ? 1: Number(req.query.page);  //クエリは文字列として扱われる
+  models.Todo.getPage(ITEM_PER_PAGE, page).then(todoList => {
     //アイテム数
     const itemNum = todoList['count'];
     //総ページ数
     const pageCount = Math.ceil(itemNum / ITEM_PER_PAGE);
     //ページネーションを取得
-    const pagenation = getPagination(PAGETATION_COLS, pageCount, currentPage)
+    const pagenation = getPagination(PAGETATION_COLS, pageCount, page)
     console.log(pagenation) //ページネーションの確認
 
     res.render('todos',{todos: todoList.rows, pagenation : pagenation, itemNum: itemNum, itemPerPage: ITEM_PER_PAGE})
   }, next)
 })
 
+//ToDoの完了・未完了更新
+app.put('/todos/:id/completed', (req, res, next) => {
+  const id = req.params.id
+  const refererUrl = req.headers.referer
+  const update = { 
+    completed: true
+  }
+  models.Todo.mod(id, update).then((id) => {
+    res.redirect(refererUrl), next})
+})
+app.delete('/todos/:id/completed', (req, res, next) => {
+  const id = req.params.id
+  const refererUrl = req.headers.referer
+  const update = { 
+    completed: false
+  }
+  models.Todo.mod(id, update).then((id) => {
+    res.redirect(refererUrl), next})
+})
+
 //ToDoの削除
 app.delete('/todos/:id', (req, res, next) => {
   const id = req.params.id
-  models.Todo.remove(id).then((id) => res.redirect('/todos'), next)
+  const refererUrl = req.headers.referer
+  models.Todo.remove(id).then((id) => res.redirect(refererUrl), next)
 })
 
 app.get('/', (req, res) => res.render('index'))
