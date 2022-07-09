@@ -8,7 +8,7 @@
       <li class="page-item"><a class="page-link" href="?page=<%= pagenation.pagePre %>">Previous</a></li>
     <% } %>
     <% pagenation.pageNumArr.forEach(pageNum => { %>
-      <% const activeClass = pageNum == pagenation.currentPage ? 'active' : '' %>
+      <% const activeClass = pageNum === pagenation.currentPage ? 'active' : '' %>
       <li class="page-item <%= activeClass %>"><a class="page-link" href="?page=<%= pageNum %>"><%= pageNum %></a></li>
     <% }) %>
     <% if (pagenation.pageNext) { %>
