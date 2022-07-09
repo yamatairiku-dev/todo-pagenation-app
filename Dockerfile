@@ -3,4 +3,4 @@ WORKDIR /home/node
 COPY . .
 
 RUN npm install
-CMD [ "/bin/bash" ]
+CMD [ "node", "app.js" ]
