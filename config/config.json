@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "zyaszixrwx",
-    "password": "todo-pagenation-app-server-passw0rd",
-    "database": "todo-pagenation-app-database",
-    "host": "todo-pagenation-app-server.mysql.database.azure.com",
+    "username": "user",
+    "password": "passw0rd",
+    "database": "pagenationapp",
+    "host": "mysql-db",
     "dialect": "mysql"
   },
   "test": {
