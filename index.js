@@ -17,10 +17,6 @@ app.use(methodOverride('_method', {
   methods: ['POST', 'GET']
 }))
 
-app.get('/name/:name', (req, res) => {
-  res.render('index', { name: req.params.name })
-})
-
 //ToDo一覧の取得
 app.get('/todos', (req, res, next) => {
   const ITEM_PER_PAGE = 10;   //1ページあたりの行数を設定
